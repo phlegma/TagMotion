@@ -643,7 +643,7 @@ namespace Chrismo.TagMotion
 
             _RecordArtist = tCDEntry.Artist;
             _RecordTitle = tCDEntry.Title;
-            _Year = Convert.ToInt32(tCDEntry.Year);
+            _Year = tCDEntry.Year == "" ? 0 : Convert.ToInt32(tCDEntry.Year);
             _Genre = tCDEntry.Genre;
 
             for (int i = 0; i < tCDEntry.Tracks.Count; i++)
@@ -653,7 +653,7 @@ namespace Chrismo.TagMotion
                 _Songs[i].Track = i + 1;
                 _Songs[i].Artist = tCDEntry.Artist;
                 _Songs[i].Title = tCDEntry.Tracks[i].Title;
-                _Songs[i].Year = Convert.ToInt32(tCDEntry.Year);
+                _Songs[i].Year = tCDEntry.Year == "" ? 0 : Convert.ToInt32(tCDEntry.Year);
                 _Songs[i].Genre = tCDEntry.Genre;
 
                 _Songs[i].SaveTags();
