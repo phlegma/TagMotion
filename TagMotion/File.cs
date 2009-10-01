@@ -10,10 +10,26 @@ namespace Chrismo.TagMotion
 
     public class Picture : File
     {
+        private int _Width = 0;
+        private int _Height = 0;
+
+        [CategoryAttribute("Info")]
+        public int Width { get { return _Width; } }
+
+        [CategoryAttribute("Info")]
+        public int Height { get { return _Height; } }
+
         public Picture(string pFilePath)
             : base(pFilePath)
         {
             _Node.Tag = NodeType.Picture;
+
+            Bitmap tImage = new Bitmap(pFilePath);
+
+            _Width = tImage.Width;
+            _Height = tImage.Height;
+
+            tImage.Dispose();
         }
 
         public void AfterSelect(ref Image pImage, ref PropertyGrid tPropertyGrid)
@@ -116,7 +132,7 @@ namespace Chrismo.TagMotion
             if (_Filtered)
                 _Node.ForeColor = Color.PaleGoldenrod;
             else
-                _Node.ForeColor = (this.HasValidTags ? Color.DarkGreen : Color.DarkRed);
+                _Node.ForeColor = (this.HasValidTags ? Color.FromArgb(0, 50, 0) : Color.FromArgb(100, 0, 0));
         }
 
         public void SaveTags()

@@ -130,10 +130,12 @@ namespace Chrismo.TagMotion
 
         public void UpdateForeColor()
         {
+            
+
             if(_Filtered)
                 _Node.ForeColor = Color.PaleGoldenrod;
             else
-                _Node.ForeColor = (this.HasValidTags ? Color.DarkGreen : Color.DarkRed);
+                _Node.ForeColor = (this.HasValidTags ? Color.FromArgb(0, 50, 0) : Color.FromArgb(100, 0, 0));
         }
 
         public void UpdateForeColors()
