@@ -8,11 +8,11 @@ namespace Chrismo.TagMotion
 {
     public class Timer
     {
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
+        //[DllImport("Kernel32.dll")]
+        //private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
 
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceFrequency(out long lpFrequency);
+        //[DllImport("Kernel32.dll")]
+        //private static extern bool QueryPerformanceFrequency(out long lpFrequency);
 
         private long startTime, stopTime, freq;
 
@@ -22,15 +22,15 @@ namespace Chrismo.TagMotion
 
         public void Start() 
         { 
-            QueryPerformanceCounter(out startTime); 
+            //QueryPerformanceCounter(out startTime); 
         }
 
         public double Stop()
         {
-            QueryPerformanceCounter(out stopTime);
+            //QueryPerformanceCounter(out stopTime);
 
-            if (QueryPerformanceFrequency(out freq) == false)
-                return 0;
+            //if (QueryPerformanceFrequency(out freq) == false)
+            //    return 0;
 
             return (double)(stopTime - startTime) / (double)freq;
         }
@@ -48,24 +48,24 @@ namespace Chrismo.TagMotion
         }
 
 
-        [DllImport("kernel32")]
-        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
+        //[DllImport("kernel32")]
+        //private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
 
-        [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(string section, string key, string def, System.Text.StringBuilder retVal, int size, string filePath);
+        //[DllImport("kernel32")]
+        //private static extern int GetPrivateProfileString(string section, string key, string def, System.Text.StringBuilder retVal, int size, string filePath);
         
         public static string GetConfigParameter(string pFilePath, string pSection, string pParameter)
         {
             System.Text.StringBuilder tStringBuilder = new System.Text.StringBuilder(4096);
 
-            int i = GetPrivateProfileString(pSection, pParameter, "", tStringBuilder, 4096, pFilePath);
+            //int i = GetPrivateProfileString(pSection, pParameter, "", tStringBuilder, 4096, pFilePath);
 
             return tStringBuilder.ToString();
         }
 
         public static void SetConfigParameter(string pFilePath, string pSection, string pParameter, string pValue)
         {
-            WritePrivateProfileString(pSection, pParameter, pValue, pFilePath);
+            //WritePrivateProfileString(pSection, pParameter, pValue, pFilePath);
         }
 
 
