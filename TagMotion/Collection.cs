@@ -13,7 +13,7 @@ namespace Chrismo.TagMotion
         Year = 0,
         Artist,
         Path,
-        Release,
+        Comment,
         CreationTime
     }
 
@@ -33,11 +33,12 @@ namespace Chrismo.TagMotion
         private List<Record> _Records = new List<Record>();
         private string _Artist = "";
         private string _Label = "";
-        private string _Release = "";
+        private string _Comment = "";
         private string _Genre = "";
         private int _ProgressValue = 0;
         private int _ProgressMax;
         private TreeNode _Node = null;
+        private bool _StopReading = false;
 
         [CategoryAttribute("Info")]
         public string Duration { get { return Utilities.GetDurationAsString(GetCollectionDuration()); } }
@@ -52,7 +53,7 @@ namespace Chrismo.TagMotion
         public string Label { get { return _Label; } set { _Label = value; } }
 
         [CategoryAttribute("Tags")]
-        public string Release { get { return _Release; } set { _Release = value; } }
+        public string Comment { get { return _Comment; } set { _Comment = value; } }
 
         [CategoryAttribute("Tags")]
         public string Genre { get { return _Genre; } set { _Genre = value; } }
@@ -66,6 +67,9 @@ namespace Chrismo.TagMotion
         [BrowsableAttribute(false)]
         public TreeNode Node { get { return _Node; } set { _Node = value; } }
 
+        [BrowsableAttribute(false)]
+        public bool StopReading { get { return _StopReading; } set { _StopReading = value; } }
+
 
         public Collection(string pDir)
         {
@@ -76,8 +80,6 @@ namespace Chrismo.TagMotion
             }
 
             _Path = pDir;
-
-            this.ReadDirectory();
         }
 
 
@@ -127,10 +129,10 @@ namespace Chrismo.TagMotion
                 if (Filter.CopyOnlyFiltered)
                 {
                     if (!tRecord.Filtered)
-                        tRecord.Copy(false);
+                        tRecord.Copy(true);
                 }
                 else
-                    tRecord.Copy(false);
+                    tRecord.Copy(true);
             }
         }
 
@@ -143,7 +145,7 @@ namespace Chrismo.TagMotion
             {
                 case SortType.Year: _Records.Sort(tComparer.SortByYear); break;
                 case SortType.Artist: _Records.Sort(tComparer.SortByArtist); break;
-                case SortType.Release: _Records.Sort(tComparer.SortByRelease); break;
+                case SortType.Comment: _Records.Sort(tComparer.SortByComment); break;
                 case SortType.Path: _Records.Sort(tComparer.SortByPath); break;
                 case SortType.CreationTime: _Records.Sort(tComparer.SortByCreationTime); break;
                 default: return;
@@ -245,39 +247,42 @@ namespace Chrismo.TagMotion
 
             foreach (Record tRecord in _Records)
             {
-                string tLine = Settings.FileStructure.ToUpper();
+                if (!tRecord.Filtered)
+                {
+                    string tLine = Settings.FileStructure.ToUpper();
 
-                if (tLine.Contains(Settings.RECORDARTIST))
-                    tLine = tLine.Replace(Settings.RECORDARTIST, tRecord.Artist);
+                    if (tLine.Contains(Settings.RECORDARTIST))
+                        tLine = tLine.Replace(Settings.RECORDARTIST, tRecord.Artist);
 
-                if (tLine.Contains(Settings.RECORDTITLE))
-                    tLine = tLine.Replace(Settings.RECORDTITLE, tRecord.Title);
+                    if (tLine.Contains(Settings.RECORDTITLE))
+                        tLine = tLine.Replace(Settings.RECORDTITLE, tRecord.Title);
 
-                if (tLine.Contains(Settings.ARTIST))
-                    tLine = tLine.Replace(Settings.ARTIST, tRecord.Artist);
+                    if (tLine.Contains(Settings.ARTIST))
+                        tLine = tLine.Replace(Settings.ARTIST, tRecord.Artist);
 
-                if (tLine.Contains(Settings.TITLE))
-                    tLine = tLine.Replace(Settings.TITLE, tRecord.Title);
+                    if (tLine.Contains(Settings.TITLE))
+                        tLine = tLine.Replace(Settings.TITLE, tRecord.Title);
 
-                if (tLine.Contains(Settings.YEAR))
-                    tLine = tLine.Replace(Settings.YEAR, tRecord.Year.ToString("0000"));
+                    if (tLine.Contains(Settings.YEAR))
+                        tLine = tLine.Replace(Settings.YEAR, tRecord.Year.ToString("0000"));
 
-                if (tLine.Contains(Settings.TRACK))
-                    tLine = tLine.Replace(Settings.TRACK, "");
+                    if (tLine.Contains(Settings.TRACK))
+                        tLine = tLine.Replace(Settings.TRACK, "");
 
-                if (tLine.Contains(Settings.LABEL))
-                    tLine = tLine.Replace(Settings.LABEL, tRecord.Label);
+                    if (tLine.Contains(Settings.LABEL))
+                        tLine = tLine.Replace(Settings.LABEL, tRecord.Label);
 
-                if (tLine.Contains(Settings.RELEASE))
-                    tLine = tLine.Replace(Settings.RELEASE, tRecord.Release);
+                    if (tLine.Contains(Settings.COMMENT))
+                        tLine = tLine.Replace(Settings.COMMENT, tRecord.Comment);
 
-                if (tLine.Contains(Settings.BITRATE))
-                    tLine = tLine.Replace(Settings.BITRATE, tRecord.Bitrate.ToString());
+                    if (tLine.Contains(Settings.BITRATE))
+                        tLine = tLine.Replace(Settings.BITRATE, tRecord.Bitrate.ToString());
 
-                if (tLine.Contains(Settings.GENRE))
-                    tLine = tLine.Replace(Settings.GENRE, tRecord.Genre);
+                    if (tLine.Contains(Settings.GENRE))
+                        tLine = tLine.Replace(Settings.GENRE, tRecord.Genre);
 
-                tList.Add(tLine);
+                    tList.Add(tLine);
+                }
             }
 
             tList.Sort();
@@ -303,7 +308,7 @@ namespace Chrismo.TagMotion
                 {
                     case "Artist": tRecord.Artist = _Artist; break;
                     case "Label": tRecord.Label = _Label; break;
-                    case "Release": tRecord.Release = _Release; break;
+                    case "Comment": tRecord.Comment = _Comment; break;
                     case "Genre": tRecord.Genre = _Genre; break;
                 }
 
@@ -327,12 +332,15 @@ namespace Chrismo.TagMotion
             // change only one property
             _Artist = _Records.All(delegate(Record R) { return R.Artist == _Records[0].Artist; }) ? _Records[0].Artist : "";
             _Label = _Records.All(delegate(Record R) { return R.Label == _Records[0].Label; }) ? _Records[0].Label : "";
-            _Release = _Records.All(delegate(Record R) { return R.Release == _Records[0].Release; }) ? _Records[0].Release : "";
+            _Comment = _Records.All(delegate(Record R) { return R.Comment == _Records[0].Comment; }) ? _Records[0].Comment : "";
             _Genre = _Records.All(delegate(Record R) { return R.Genre == _Records[0].Genre; }) ? _Records[0].Genre : "";
         }
 
         private void GetAllRecords(string pDir)
         {
+            if (_StopReading)
+                return;
+
             if (_Path == Directory.GetParent(pDir).FullName)
             {
                 _ProgressValue++;
@@ -427,9 +435,9 @@ namespace Chrismo.TagMotion
                 return Record1.Path.CompareTo(Record2.Path);
             }
 
-            public int SortByRelease(Record Record1, Record Record2)
+            public int SortByComment(Record Record1, Record Record2)
             {
-                return Record1.Release.CompareTo(Record2.Release);
+                return Record1.Comment.CompareTo(Record2.Comment);
             }
 
             public int SortByCreationTime(Record Record1, Record Record2)

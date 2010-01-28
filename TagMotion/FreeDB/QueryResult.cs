@@ -67,42 +67,49 @@ namespace Freedb
 		/// <param name="queryResult"></param>
 		public bool Parse(string queryResult,bool match)
 		{
-			queryResult.Trim();
-			int secondIndex =0;
-			
-			// get first white space
-			int index = queryResult.IndexOf(' ');
-			
-            //if we are parsing a matched queryresult there is no responsecode so skip it
-			if (!match)
-			{
-				_ResponseCode = queryResult.Substring(0,index);
-				index++;
-				secondIndex = queryResult.IndexOf(' ',index);
-			}
-			else 
-			{
-				secondIndex = index;
-				index=0;
-			}
+            try
+            {
+                queryResult.Trim();
+                int secondIndex = 0;
 
-			_Genre = queryResult.Substring(index,secondIndex-index);
-			index = secondIndex;
-			index++;
-			secondIndex = queryResult.IndexOf(' ',index);
+                // get first white space
+                int index = queryResult.IndexOf(' ');
 
-			_DiscID = queryResult.Substring(index,secondIndex-index);
-			index = secondIndex;
-			index++;
-			secondIndex = queryResult.IndexOf('/',index);
-			
-            _Artist = queryResult.Substring(index,secondIndex-index-1); // -1 because there is a space at the end of artist
-			index = secondIndex;
-			index+=2; //skip past / and space
-			
-            _Title = queryResult.Substring(index); 
-			
-            return true;
+                //if we are parsing a matched queryresult there is no responsecode so skip it
+                if (!match)
+                {
+                    _ResponseCode = queryResult.Substring(0, index);
+                    index++;
+                    secondIndex = queryResult.IndexOf(' ', index);
+                }
+                else
+                {
+                    secondIndex = index;
+                    index = 0;
+                }
+
+                _Genre = queryResult.Substring(index, secondIndex - index);
+                index = secondIndex;
+                index++;
+                secondIndex = queryResult.IndexOf(' ', index);
+
+                _DiscID = queryResult.Substring(index, secondIndex - index);
+                index = secondIndex;
+                index++;
+                secondIndex = queryResult.IndexOf('/', index);
+
+                _Artist = queryResult.Substring(index, secondIndex - index - 1); // -1 because there is a space at the end of artist
+                index = secondIndex;
+                index += 2; //skip past / and space
+
+                _Title = queryResult.Substring(index);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
 		}
 
 //		public bool Parse(string queryResult)

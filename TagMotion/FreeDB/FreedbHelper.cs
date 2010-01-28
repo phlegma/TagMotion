@@ -416,8 +416,13 @@ namespace Freedb
 					coll.RemoveAt(0);
 					foreach (string line in coll)
 					{
-						QueryResult result = new QueryResult(line, true);
-						queryResultsColl.Add(result);
+                        try
+                        {
+                            QueryResult result = new QueryResult(line, true);
+                            queryResultsColl.Add(result);
+                        }
+                        catch
+                        { }
 					}
 				
 					return ResponseCodes.CODE_211;

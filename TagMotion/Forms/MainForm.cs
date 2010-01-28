@@ -90,13 +90,31 @@ namespace Chrismo.TagMotion.Forms
 
             _Collection = new Collection(Settings.SourceDir);
 
+            try
+            {
+                _Collection.ReadDirectory();
+            }
+            catch (OutOfMemoryException ex)
+            {
+                _Collection.StopReading = true;
+            }
+            catch (Exception ex)
+            {
+                if (ex.GetType() == typeof(FileNotFoundException) && ex.Message.Contains("System.Core"))
+                    MessageBox.Show("You need to install the latest Version of the .NET Runtime. (3.5 or higher)");
+                else
+                    MessageBox.Show("Error during Reading the Source Directory:" + Environment.NewLine + ex.Message);
+
+                return;
+            }
+
             switch (Settings.SortType)
             {
                 case "Path": _Collection.Sort(SortType.Path); break;
                 case "CreationTime": _Collection.Sort(SortType.CreationTime); break;
                 case "Artist": _Collection.Sort(SortType.Artist); break;
                 case "Year": _Collection.Sort(SortType.Year); break;
-                case "Release": _Collection.Sort(SortType.Release); break;
+                case "Comment": _Collection.Sort(SortType.Comment); break;
             }
 
             this.FillTreeview();
@@ -122,8 +140,7 @@ namespace Chrismo.TagMotion.Forms
             }
             else
             {
-                if (_Thread.IsAlive)
-                    _Thread.Abort();
+                _Collection.StopReading = true;
 
                 this.button_ReadSourceDirectory.BackgroundImage = global::Chrismo.TagMotion.Properties.Resources.media_playback_start;
             }
@@ -205,7 +222,7 @@ namespace Chrismo.TagMotion.Forms
                     case "CreationTime": _Collection.Sort(SortType.CreationTime); break;
                     case "Artist": _Collection.Sort(SortType.Artist); break;
                     case "Year": _Collection.Sort(SortType.Year); break;
-                    case "Release": _Collection.Sort(SortType.Release); break;
+                    case "Comment": _Collection.Sort(SortType.Comment); break;
                 }
 
                 this.FillTreeview();
@@ -327,6 +344,8 @@ namespace Chrismo.TagMotion.Forms
             this.contextMenu.Items[1].Visible = false;
             this.contextMenu.Items[2].Visible = false;
             this.contextMenu.Items[3].Visible = false;
+            this.contextMenu.Items[4].Visible = false;
+            this.contextMenu.Items[5].Visible = false;
 
             if (e.Button != MouseButtons.Right || e.Node.Tag == null)
                 return;
@@ -751,7 +770,12 @@ namespace Chrismo.TagMotion.Forms
 
                     tRecord.Pictures.Remove(tPicture);
                     tPicture.Delete(false);
+
+                    GC.Collect();
+                    GC.SuppressFinalize(tPicture);
+
                     tRecord.ReadDirectory();
+                    
                     break;
 
                 case NodeType.Info:
@@ -800,7 +824,7 @@ namespace Chrismo.TagMotion.Forms
                         {
                             case "Artist": _Collection.Artist = e.OldValue.ToString(); break;
                             case "Label": _Collection.Label = e.OldValue.ToString(); break;
-                            case "Release": _Collection.Release = e.OldValue.ToString(); break;
+                            case "Comment": _Collection.Comment = e.OldValue.ToString(); break;
                             case "Genre": _Collection.Genre = e.OldValue.ToString(); break;
                         }
 
@@ -860,11 +884,12 @@ namespace Chrismo.TagMotion.Forms
                 pValue = pValue > pMax ? pMax : pValue;
 
                 this.ProgressBar.Maximum = pMax;
-                this.ProgressBar.Value = pValue;                
-
+                this.ProgressBar.Value = pValue;
+                                
                 this.Statusbar.Text = String.Format("{0}/{1} :: {2}", pValue.ToString(), pMax.ToString(), pInfoText);
+                this.statusStrip1.Refresh();
 
-                this.Refresh();
+                //this.Refresh();
             }
         }
 

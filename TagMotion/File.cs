@@ -132,7 +132,7 @@ namespace Chrismo.TagMotion
             if (_Filtered)
                 _Node.ForeColor = Color.PaleGoldenrod;
             else
-                _Node.ForeColor = (this.HasValidTags ? Color.FromArgb(0, 50, 0) : Color.FromArgb(100, 0, 0));
+                _Node.ForeColor = (this.HasValidTags ? Color.FromArgb(0, 70, 0) : Color.FromArgb(120, 0, 0));
         }
 
         public void SaveTags()
@@ -147,7 +147,7 @@ namespace Chrismo.TagMotion
                 _TaglibFile.Tag.Year = (uint)_Year;
                 _TaglibFile.Tag.Publisher = _Label;
                 _TaglibFile.Tag.Conductor = _Label;
-                _TaglibFile.Tag.Comment = _Release;
+                _TaglibFile.Tag.Comment = _Comment;
                 _TaglibFile.Tag.Genres = new string[] { _Genre };
 
                 try
@@ -171,7 +171,7 @@ namespace Chrismo.TagMotion
             if (Settings.FileStructure.Contains(Settings.YEAR)) tHasValidTags &= _Year != 0;
             if (Settings.FileStructure.Contains(Settings.TRACK)) tHasValidTags &= _Track != 0;
             if (Settings.FileStructure.Contains(Settings.LABEL)) tHasValidTags &= _Label != "";
-            if (Settings.FileStructure.Contains(Settings.RELEASE)) tHasValidTags &= _Release != "";
+            if (Settings.FileStructure.Contains(Settings.COMMENT)) tHasValidTags &= _Comment != "";
             if (Settings.FileStructure.Contains(Settings.GENRE)) tHasValidTags &= _Genre != "";
 
             return tHasValidTags;
@@ -186,9 +186,11 @@ namespace Chrismo.TagMotion
 
                 pPics[0].Description = _RecordArtist + " - " + _RecordTitle;
                 pPics[0].Type = TagLib.PictureType.FrontCover;
-
-
+                
                 _TaglibFile.Save();
+
+                _IPictures.Clear();
+                _IPictures.AddRange(pPics);
             }
         }
 
@@ -247,7 +249,7 @@ namespace Chrismo.TagMotion
             _Year = (int)_TaglibFile.Tag.Year;
             _Track = (int)_TaglibFile.Tag.Track;
             _Label = Utilities.CleanTagString(_TaglibFile.Tag.Publisher);
-            _Release = Utilities.CleanTagString(_TaglibFile.Tag.Comment);
+            _Comment = Utilities.CleanTagString(_TaglibFile.Tag.Comment);
             _Genre = Utilities.CleanTagString(_TaglibFile.Tag.FirstGenre);
             _Bitrate = _TaglibFile.Properties.AudioBitrate;
             _Duration = _TaglibFile.Properties.Duration;
@@ -280,7 +282,7 @@ namespace Chrismo.TagMotion
         protected int _Year = 0;
         protected string _Genre = "";
         protected string _Label = "";
-        protected string _Release = "";
+        protected string _Comment = "";
         protected int _RecordBitrate = 0;
         protected long _FileSize = 0;
         protected string _FileSizeAsString = "";
@@ -301,7 +303,7 @@ namespace Chrismo.TagMotion
         public string Label { get { return _Label; } set { _Label = value; } }
 
         [ReadOnly(true), CategoryAttribute("Tags")]
-        public string Release { get { return _Release; } set { _Release = value; } }
+        public string Comment { get { return _Comment; } set { _Comment = value; } }
 
         [ReadOnly(true), CategoryAttribute("Tags")]
         public int Year { get { return _Year; } set { _Year = value; } }
@@ -393,6 +395,10 @@ namespace Chrismo.TagMotion
             {
                 MessageBox.Show(ex.Message); return false;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message); return false;
+            }
         }
 
         public string Rename(int pCounter)
@@ -404,7 +410,7 @@ namespace Chrismo.TagMotion
             tNewFileName = tNewFileName.Replace(Settings.GENRE, _Genre);
             tNewFileName = tNewFileName.Replace(Settings.YEAR, _Year.ToString("0000"));
             tNewFileName = tNewFileName.Replace(Settings.LABEL, _Label);
-            tNewFileName = tNewFileName.Replace(Settings.RELEASE, _Release);
+            tNewFileName = tNewFileName.Replace(Settings.COMMENT, _Comment);
             tNewFileName = tNewFileName.Replace(Settings.BITRATE, _RecordBitrate.ToString("000"));
             tNewFileName = tNewFileName.Replace(Settings.DIR, new System.IO.FileInfo(_Path).Directory.Name);
 

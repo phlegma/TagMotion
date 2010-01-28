@@ -43,7 +43,7 @@
             this.TextField.Name = "TextField";
             this.TextField.Size = new System.Drawing.Size(718, 21);
             this.TextField.TabIndex = 0;
-            this.TextField.Text = "[%LABEL]\\[%RELEASE] %RECORDARTIST - %RECORDTITLE (%BITRATE)\\%TRACK - %ARTIST - %T" +
+            this.TextField.Text = "[%LABEL]\\[%COMMENT] %RECORDARTIST - %RECORDTITLE (%BITRATE)\\%TRACK - %ARTIST - %T" +
                 "ITLE";
             // 
             // button_OK

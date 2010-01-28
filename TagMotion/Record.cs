@@ -18,7 +18,7 @@ namespace Chrismo.TagMotion
         private string _RecordTitle = "";
         private int _Year = 0;
         private string _Label = "";
-        private string _Release = "";
+        private string _Comment = "";
         private string _Genre = "";
         private int _Bitrate = 0;
         private string _Type = "";
@@ -59,7 +59,7 @@ namespace Chrismo.TagMotion
         public string Label { get { return _Label; } set { _Label = value; } }
 
         [LocalizableAttribute(true), CategoryAttribute("Tags")]
-        public string Release { get { return _Release; } set { _Release = value; } }
+        public string Comment { get { return _Comment; } set { _Comment = value; } }
 
         [LocalizableAttribute(true), CategoryAttribute("Tags")]
         public int Year { get { return _Year; } set { _Year = value; } }
@@ -230,7 +230,7 @@ namespace Chrismo.TagMotion
             {
                 case SortType.Year: _Songs.Sort(tComparer.SortByYear); break;
                 case SortType.Artist: _Songs.Sort(tComparer.SortByArtist); break;
-                case SortType.Release: _Songs.Sort(tComparer.SortByRelease); break;
+                case SortType.Comment: _Songs.Sort(tComparer.SortByComment); break;
                 case SortType.Path: _Songs.Sort(tComparer.SortByPath); break;
             }
         }
@@ -288,7 +288,7 @@ namespace Chrismo.TagMotion
                 Dictionary<string, string> tList = new Dictionary<string, string>();
 
                 List<string> tExpressions = new List<string>(new string[] { Settings.ARTIST, Settings.TITLE, Settings.TRACK,
-                    Settings.YEAR, Settings.RECORDARTIST, Settings.RECORDTITLE, Settings.LABEL, Settings.GENRE, Settings.RELEASE });
+                    Settings.YEAR, Settings.RECORDARTIST, Settings.RECORDTITLE, Settings.LABEL, Settings.GENRE, Settings.COMMENT });
 
                 int tPosition = 0;
 
@@ -344,10 +344,10 @@ namespace Chrismo.TagMotion
                         this.Label = tPair.Value;
                     }
 
-                    if (tPair.Key == Settings.RELEASE)
+                    if (tPair.Key == Settings.COMMENT)
                     {
-                        tSong.Release = tPair.Value;
-                        this.Release = tPair.Value;
+                        tSong.Comment = tPair.Value;
+                        this.Comment = tPair.Value;
                     }
 
                     if (tPair.Key == Settings.RECORDARTIST)
@@ -402,7 +402,7 @@ namespace Chrismo.TagMotion
                 tSong.RecordTitle = _RecordTitle;
                 tSong.Year = _Year;
                 tSong.Label = _Label;
-                tSong.Release = _Release;
+                tSong.Comment = _Comment;
                 tSong.Genre = _Genre;
 
                 tSong.SaveTags();
@@ -528,7 +528,7 @@ namespace Chrismo.TagMotion
             _RecordArtist = _Songs.All(delegate(Song S) { return S.RecordArtist == _Songs[0].RecordArtist; }) ? _Songs[0].RecordArtist : "";
             _RecordTitle = _Songs.All(delegate(Song S) { return S.RecordTitle == _Songs[0].RecordTitle; }) ? _Songs[0].RecordTitle : "";
             _Label = _Songs.All(delegate(Song S) { return S.Label == _Songs[0].Label; }) ? _Songs[0].Label : "";
-            _Release = _Songs.All(delegate(Song S) { return S.Release == _Songs[0].Release; }) ? _Songs[0].Release : "";
+            _Comment = _Songs.All(delegate(Song S) { return S.Comment == _Songs[0].Comment; }) ? _Songs[0].Comment : "";
             _Year = _Songs.All(delegate(Song S) { return S.Year == _Songs[0].Year; }) ? _Songs[0].Year : 0;
             _Genre = _Songs.All(delegate(Song S) { return S.Genre == _Songs[0].Genre; }) ? _Songs[0].Genre : "";
             _Type = _Songs.All(delegate(Song S) { return S.Type == _Songs[0].Type; }) ? _Songs[0].Type : "";
@@ -550,14 +550,21 @@ namespace Chrismo.TagMotion
 
             foreach (string tPath in tPaths)
             {
-                Picture tPic = new Picture(tPath);
+                try
+                {
+                    Picture tPic = new Picture(tPath);
 
-                this.FillPictureProperties(tPic);
+                    this.FillPictureProperties(tPic);
 
-                _Pictures.Add(tPic);
+                    _Pictures.Add(tPic);
 
-                _Node.Nodes[1].Nodes.Add(tPic.Node);
-                tPic.Node.Text = tPic.Node.Text.Substring(this.Path.Length + 1);
+                    _Node.Nodes[1].Nodes.Add(tPic.Node);
+                    tPic.Node.Text = tPic.Node.Text.Substring(this.Path.Length + 1);
+                }
+                catch (ArgumentException)
+                {
+                    MessageBox.Show("Image is not valid." + Environment.NewLine + tPath);
+                }
             }
 
             _Node.Nodes[1].Text += _Pictures.Count;
@@ -594,7 +601,7 @@ namespace Chrismo.TagMotion
             if (Settings.FileStructure.Contains(Settings.RECORDTITLE)) tHasValidTags &= _RecordTitle != "";
             if (Settings.FileStructure.Contains(Settings.YEAR)) tHasValidTags &= _Year != 0;
             if (Settings.FileStructure.Contains(Settings.LABEL)) tHasValidTags &= _Label != "";
-            if (Settings.FileStructure.Contains(Settings.RELEASE)) tHasValidTags &= _Release != "";
+            if (Settings.FileStructure.Contains(Settings.COMMENT)) tHasValidTags &= _Comment != "";
             if (Settings.FileStructure.Contains(Settings.GENRE)) tHasValidTags &= _Genre != "";
 
             return tHasValidTags;
@@ -743,7 +750,7 @@ namespace Chrismo.TagMotion
             tPicture.RecordTitle = _RecordTitle;
             tPicture.Year = _Year;
             tPicture.Label = _Label;
-            tPicture.Release = _Release;
+            tPicture.Comment = _Comment;
             tPicture.RecordBitrate = _Bitrate;
             tPicture.Genre = _Genre;
         }
@@ -754,7 +761,7 @@ namespace Chrismo.TagMotion
             tInfo.RecordTitle = _RecordTitle;
             tInfo.Year = _Year;
             tInfo.Label = _Label;
-            tInfo.Release = _Release;
+            tInfo.Comment = _Comment;
             tInfo.RecordBitrate = _Bitrate;
             tInfo.Genre = _Genre;
         }
@@ -826,9 +833,9 @@ namespace Chrismo.TagMotion
                 return Song1.Path.CompareTo(Song2.Path);
             }
 
-            public int SortByRelease(Song Song1, Song Song2)
+            public int SortByComment(Song Song1, Song Song2)
             {
-                return Song1.Release.CompareTo(Song2.Release);
+                return Song1.Comment.CompareTo(Song2.Comment);
             }
         }
     }

@@ -12,12 +12,12 @@ namespace Chrismo.TagMotion
         public const string YEAR = "%YEAR";
         public const string TRACK = "%TRACK";
         public const string LABEL = "%LABEL";
-        public const string RELEASE = "%RELEASE";
+        public const string COMMENT = "%COMMENT";
         public const string GENRE = "%GENRE";
         public const string BITRATE = "%BITRATE";
         public const string DIR = "%DIR";
         
-        public const string SONGTYPES = "*.mp3|*.ogg|*.flac|*.m4a";
+        public const string SONGTYPES = "*.mp3|*.ogg|*.flac|*.m4a|*.wma";
         public const string PICTYPES = "*.jpg|*.jpeg|*.gif|*.png";
         
         public const string ConfigPath = @"TagMotion.config";
@@ -79,7 +79,7 @@ namespace Chrismo.TagMotion
             if (FileStructures[0] == "")
             {
                 FileStructures.Clear();
-                FileStructures.AddRange(new string[] { @"%RECORDARTIST\[%YEAR] %RECORDARTIST - %RECORDTITLE\%TRACK - %ARTIST - %TITLE", @"[%LABEL]\[%RELEASE] %RECORDARTIST - %RECORDTITLE (%BITRATE)\%TRACK - %ARTIST - %TITLE" });
+                FileStructures.AddRange(new string[] { @"%RECORDARTIST\[%YEAR] %RECORDARTIST - %RECORDTITLE\%TRACK - %ARTIST - %TITLE", @"[%LABEL]\[%COMMENT] %RECORDARTIST - %RECORDTITLE (%BITRATE)\%TRACK - %ARTIST - %TITLE" });
             }
 
             try { SelectedSourceDir = Convert.ToInt32(Utilities.GetConfigParameter(ConfigPath, ConfigSection, "SelectedSourceDir")); }
