@@ -403,7 +403,13 @@ namespace Chrismo.TagMotion
 
         public string Rename(int pCounter)
         {
-            string tNewFileName = Settings.FileStructure.ToUpper();
+			string tNewFileName = "";
+
+			string[] tParts = new string[Settings.FileStructure.ToUpper().Split(new string[] { "\\" }, StringSplitOptions.None).Length];
+			Settings.FileStructure.ToUpper().Split(new string[] { "\\" }, StringSplitOptions.None).CopyTo(tParts, 0);
+
+			for (int i = 0; i < tParts.Length; i++)
+				tNewFileName = System.IO.Path.Combine(tNewFileName, tParts[i]);
 
             tNewFileName = tNewFileName.Replace(Settings.RECORDARTIST, _RecordArtist);
             tNewFileName = tNewFileName.Replace(Settings.RECORDTITLE, _RecordTitle);

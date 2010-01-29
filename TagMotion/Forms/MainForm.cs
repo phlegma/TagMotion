@@ -64,29 +64,36 @@ namespace Chrismo.TagMotion.Forms
 
         private void FillTreeview()
         {
-            if (this.InvokeRequired)
-                this.Invoke(new MethodInvoker(FillTreeview));
-            else
+            try
             {
-                this.TreeView.Nodes.Clear();
+                if (this.InvokeRequired)
+                    this.Invoke(new MethodInvoker(FillTreeview));
+                else
+                {
+                    this.TreeView.Nodes.Clear();
 
-                this.TreeView.Nodes.Add(_Collection.Node);
+                    this.TreeView.Nodes.Add(_Collection.Node);
 
-                this.MoveSplitter(this.PropertyGrid, this.PropertyGrid.Width / 4);
+                    this.MoveSplitter(this.PropertyGrid, this.PropertyGrid.Width / 4);
 
-                this.Statusbar.Text = Settings.SourceDir + " read.";
+                    this.Statusbar.Text = Settings.SourceDir + " read.";
 
-                this.TreeView.Focus();
+                    this.TreeView.Focus();
 
-                _SelectedNode = this.TreeView.SelectedNode;
+                    _SelectedNode = this.TreeView.SelectedNode;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Exception :: " + ex.GetType() + Environment.NewLine + "Message: " + ex.Message);
             }
         }
 
         private void ReadSourceDirectory()
         {
-            Timer tTimer = new Timer();
+			Timer tTimer = new Timer();
 
-            tTimer.Start();
+			tTimer.Start();
 
             _Collection = new Collection(Settings.SourceDir);
 
@@ -119,7 +126,7 @@ namespace Chrismo.TagMotion.Forms
 
             this.FillTreeview();
 
-            this.Statusbar.Text += String.Format(" ({0} sec)", tTimer.Stop().ToString("##0.000"));
+			this.Statusbar.Text += String.Format(" ({0} sec)", tTimer.Stop().ToString("##0.000"));
             this.button_ReadSourceDirectory.BackgroundImage = global::Chrismo.TagMotion.Properties.Resources.media_playback_start;
 
             _ReadingSourceDirectory = false;
@@ -207,7 +214,7 @@ namespace Chrismo.TagMotion.Forms
             Settings.CreateDummyFile = _SettingsDialog.checkBox_DummyCreation.Checked;
             Settings.FreeDBChecking = _SettingsDialog.checkBox_FreeDBQuery.Checked;
 
-            Settings.Save();
+			Settings.Save();
 
 
 
@@ -239,11 +246,13 @@ namespace Chrismo.TagMotion.Forms
         {
             try
             {
+#if !LINUX
                 object propertyGridView = typeof(PropertyGrid).InvokeMember("gridView",
                     BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance, null, propertyGrid, null);
 
                 propertyGridView.GetType().InvokeMember("MoveSplitterTo",
                     BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Instance, null, propertyGridView, new object[] { x });
+# endif
             }
             catch (TargetInvocationException)
             { }
@@ -652,7 +661,7 @@ namespace Chrismo.TagMotion.Forms
             {
                 tRecord = _Collection.Records[i];
 
-                tImagePath = tRecord.Path + "\\" + tRecord.Artist + " - " + tRecord.Title + ".jpg";
+                tImagePath = System.IO.Path.Combine(tRecord.Path, tRecord.Artist + " - " + tRecord.Title + ".jpg");
 
                 int j = 0;
 
@@ -700,7 +709,7 @@ namespace Chrismo.TagMotion.Forms
                         return;
                     }
 
-                    tImagePath = tRecord.Path + "\\" + tRecord.Artist + " - " + tRecord.Title + ".jpg";
+                    tImagePath = System.IO.Path.Combine(tRecord.Path, tRecord.Artist + " - " + tRecord.Title + ".jpg");
 
                     if (System.IO.File.Exists(tImagePath))
                     {

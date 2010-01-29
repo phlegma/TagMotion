@@ -324,7 +324,7 @@ namespace Chrismo.TagMotion
                 // Record.Path == Collection.Path
                 return _Records.First(delegate(Record R) { return R.Path == _Path; });
             else
-                return _Records.First(delegate(Record R) { return R.Path == _Path + "\\" + pPath; });
+                return _Records.First(delegate(Record R) { return R.Path == System.IO.Path.Combine(_Path, pPath); });
         }
 
         private void ReadProperties()

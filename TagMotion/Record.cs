@@ -121,7 +121,9 @@ namespace Chrismo.TagMotion
         public void AfterSelect(ref Image pImage, ref PropertyGrid tPropertyGrid)
         {
             if (_Pictures.Count > 0)
+            {
                 pImage = new Bitmap(_Pictures[0].Path);
+            }
             else
                 pImage = null;
 
@@ -260,17 +262,17 @@ namespace Chrismo.TagMotion
 
         public Song GetSong(string pPath)
         {
-            return _Songs.First(delegate(Song S) { return S.Path == _Path + "\\" +  pPath; });            
+			return _Songs.First(delegate(Song S) { return S.Path == System.IO.Path.Combine(_Path, pPath); });            
         }
         
         public Picture GetPicture(string pPath)
         {
-            return _Pictures.First(delegate(Picture P) { return P.Path == _Path + "\\" + pPath; });
+			return _Pictures.First(delegate(Picture P) { return P.Path == System.IO.Path.Combine(_Path, pPath); });
         }
         
         public Info GetInfo(string pPath)
         {
-            return _Infos.First(delegate(Info I) { return I.Path == _Path + "\\" + pPath; });
+			return _Infos.First(delegate(Info I) { return I.Path == System.IO.Path.Combine(_Path, pPath); });
         }
 
 
@@ -441,9 +443,9 @@ namespace Chrismo.TagMotion
         {
             if (_Songs[0].Pictures.Count > 1)
                 for (int i = 0; i < _Songs[0].Pictures.Count; i++)
-                    _Songs[0].SaveID3PictureToImage(_Songs[0].Pictures[i], _Path + "\\TagPicture " + (i + 1) + ".jpg");
+                    _Songs[0].SaveID3PictureToImage(_Songs[0].Pictures[i], System.IO.Path.Combine(_Path, "TagPicture " + (i + 1) + ".jpg"));
             else
-                _Songs[0].SaveID3PictureToImage(_Songs[0].Pictures[0], _Path + "\\TagPicture.jpg");
+                _Songs[0].SaveID3PictureToImage(_Songs[0].Pictures[0], System.IO.Path.Combine(_Path, "TagPicture.jpg"));
         }
 
 
