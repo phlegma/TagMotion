@@ -114,7 +114,7 @@ namespace Chrismo.TagMotion
             _DurationAsString = Utilities.GetDurationAsString(_Duration);
         }
 
-        public void AfterSelect(ref Image pImage, ref PropertyGrid tPropertyGrid)
+        public void AfterSelect(ref Image pImage, ref PropertyGrid pPropertyGrid)
         {
             if (_IPictures.Count > 0)
             {
@@ -124,7 +124,7 @@ namespace Chrismo.TagMotion
             else
                 pImage = null;
 
-            tPropertyGrid.SelectedObject = this;
+            pPropertyGrid.SelectedObject = this;
         }
 
         public new void UpdateForeColor()
@@ -219,6 +219,8 @@ namespace Chrismo.TagMotion
                 return;
 
             MemoryStream tStream = new MemoryStream(pPicture.Data.Data.Length);
+
+            
 
             tStream.Write(pPicture.Data.Data, 0, pPicture.Data.Data.Length);
             tStream.Flush();
@@ -403,7 +405,7 @@ namespace Chrismo.TagMotion
 
         public string Rename(int pCounter)
         {
-			string tNewFileName = "";
+            string tNewFileName = "";
 
 			string[] tParts = new string[Settings.FileStructure.ToUpper().Split(new string[] { "\\" }, StringSplitOptions.None).Length];
 			Settings.FileStructure.ToUpper().Split(new string[] { "\\" }, StringSplitOptions.None).CopyTo(tParts, 0);

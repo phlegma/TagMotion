@@ -1,6 +1,33 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Chrismo.TagMotion.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SourceDirs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Dokumente und Einstellungen\chrsm\Desktop\DirectLinks</Value>
+    </Setting>
+    <Setting Name="SelectedSourceDir" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="DestinationDirs" Type="System.String" Scope="User">
+      <Value Profile="(Default)">E:\HQ?H:\Audio?C:\Dokumente und Einstellungen\chrsm\Desktop</Value>
+    </Setting>
+    <Setting Name="SelectedDestinationDir" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="FileStructures" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%RECORDARTIST\[%YEAR] %RECORDARTIST - %RECORDTITLE\%TRACK - %ARTIST - %TITLE?[%LABEL]\[%COMMENT] %RECORDARTIST - %RECORDTITLE\%TRACK - %ARTIST - %TITLE</Value>
+    </Setting>
+    <Setting Name="SelectedFileStructure" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="InfoTypes" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="SortType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">CreationTime</Value>
+    </Setting>
+    <Setting Name="FreeDBChecking" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

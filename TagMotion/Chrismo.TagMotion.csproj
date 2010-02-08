@@ -35,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'LINUX|AnyCPU' ">
     <OutputPath>bin\LINUX\</OutputPath>
-    <DefineConstants>TRACE;LINUX</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;LINUX</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -152,6 +152,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="App.config" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -159,6 +160,21 @@
     </Compile>
     <Compile Include="Record.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="TagLib\Aac\AudioHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TagLib\Aac\BitStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TagLib\Aac\File.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TagLib\Aiff\File.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TagLib\Aiff\StreamHeader.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="TagLib\Ape\File.cs" />
     <Compile Include="TagLib\Ape\Footer.cs" />
     <Compile Include="TagLib\Ape\Item.cs" />

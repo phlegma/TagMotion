@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace Chrismo.TagMotion
 {
@@ -17,7 +18,7 @@ namespace Chrismo.TagMotion
         public const string BITRATE = "%BITRATE";
         public const string DIR = "%DIR";
         
-        public const string SONGTYPES = "*.mp3|*.ogg|*.flac|*.m4a|*.wma";
+        public const string SONGTYPES = "*.mp3|*.ogg|*.flac|*.m4a|*.wma|*.aac|*.aiff";
         public const string PICTYPES = "*.jpg|*.jpeg|*.gif|*.png";
         
 		public static string ConfigPath = System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "TagMotion.config");
@@ -44,21 +45,23 @@ namespace Chrismo.TagMotion
 
 
 		public static void Save()
-		{        
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "SourceDirs", String.Join("?", SourceDirs.ToArray()));
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "SelectedSourceDir", SelectedSourceDir.ToString());
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "DestinationDirs", String.Join("?", DestinationDirs.ToArray()));
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "SelectedDestinationDir", SelectedDestinationDir.ToString());
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "FileStructures", String.Join("?", FileStructures.ToArray()));
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "SelectedFileStructure", SelectedFileStructure.ToString());
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "InfoTypes", InfoTypes);
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "SortType", SortType);
-			Utilities.SetConfigParameter(ConfigPath, ConfigSection, "FreeDBChecking", FreeDBChecking.ToString());
+		{
+            Properties.Settings.Default.SourceDirs = String.Join("?", SourceDirs.ToArray());
+            Properties.Settings.Default.DestinationDirs = String.Join("?", DestinationDirs.ToArray());
+            Properties.Settings.Default.FileStructures = String.Join("?", FileStructures.ToArray());
+            Properties.Settings.Default.SelectedSourceDir = SelectedSourceDir;
+            Properties.Settings.Default.SelectedDestinationDir = SelectedDestinationDir;
+            Properties.Settings.Default.SelectedFileStructure = SelectedFileStructure;
+            Properties.Settings.Default.InfoTypes = InfoTypes;
+            Properties.Settings.Default.SortType = SortType;
+            Properties.Settings.Default.FreeDBChecking = FreeDBChecking;
+
+            Properties.Settings.Default.Save();
 		}
 
         public static void Load()
         {
-			SourceDirs.AddRange(@Utilities.GetConfigParameter(ConfigPath, ConfigSection, "SourceDirs").Split(new char[] { '?' }));
+            SourceDirs.AddRange(Properties.Settings.Default.SourceDirs.Split(new char[] { '?' }));
 
             if (SourceDirs[0] == "")
             {
@@ -67,7 +70,7 @@ namespace Chrismo.TagMotion
 				
             }
 
-			DestinationDirs.AddRange(@Utilities.GetConfigParameter(ConfigPath, ConfigSection, "DestinationDirs").Split(new char[] { '?' }));
+            DestinationDirs.AddRange(Properties.Settings.Default.DestinationDirs.Split(new char[] { '?' }));
 
             if (DestinationDirs[0] == "")
             {
@@ -75,7 +78,7 @@ namespace Chrismo.TagMotion
 				DestinationDirs.Add(System.Windows.Forms.Application.StartupPath);
             }
 
-			FileStructures.AddRange(@Utilities.GetConfigParameter(ConfigPath, ConfigSection, "FileStructures").Split(new char[] { '?' }));
+            FileStructures.AddRange(Properties.Settings.Default.FileStructures.Split(new char[] { '?' }));
 
             if (FileStructures[0] == "")
             {
@@ -83,22 +86,22 @@ namespace Chrismo.TagMotion
                 FileStructures.AddRange(new string[] { @"%RECORDARTIST\[%YEAR] %RECORDARTIST - %RECORDTITLE\%TRACK - %ARTIST - %TITLE", @"[%LABEL]\[%COMMENT] %RECORDARTIST - %RECORDTITLE (%BITRATE)\%TRACK - %ARTIST - %TITLE" });
             }
 
-			try { SelectedSourceDir = Convert.ToInt32(Utilities.GetConfigParameter(ConfigPath, ConfigSection, "SelectedSourceDir")); }
+            try { SelectedSourceDir = Properties.Settings.Default.SelectedSourceDir; }
 			catch (Exception) { }
 
-			try { SelectedDestinationDir = Convert.ToInt32(Utilities.GetConfigParameter(ConfigPath, ConfigSection, "SelectedDestinationDir")); }
+            try { SelectedDestinationDir = Properties.Settings.Default.SelectedDestinationDir; }
 			catch (Exception) { }
 
-			try { SelectedFileStructure = Convert.ToInt32(Utilities.GetConfigParameter(ConfigPath, ConfigSection, "SelectedFileStructure")); }
+            try { SelectedFileStructure = Properties.Settings.Default.SelectedFileStructure; }
 			catch (Exception) { }
 
-			try { InfoTypes = @Utilities.GetConfigParameter(ConfigPath, ConfigSection, "InfoTypes"); }
+            try { InfoTypes = Properties.Settings.Default.InfoTypes; }
 			catch (Exception) { }
 
-			try { SortType = @Utilities.GetConfigParameter(ConfigPath, ConfigSection, "SortType"); }
+            try { SortType = Properties.Settings.Default.SortType; }
 			catch (Exception) { }
 
-			try { FreeDBChecking = Convert.ToBoolean(@Utilities.GetConfigParameter(ConfigPath, ConfigSection, "FreeDBChecking")); }
+            try { FreeDBChecking = Properties.Settings.Default.FreeDBChecking; }
 			catch (Exception) { }
         }
     }

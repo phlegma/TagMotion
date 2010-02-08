@@ -6,43 +6,6 @@ using System.Collections.Generic;
 
 namespace Chrismo.TagMotion
 {
-	
-	public class Timer
-    {
-# if !LINUX
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
-
-        [DllImport("Kernel32.dll")]
-        private static extern bool QueryPerformanceFrequency(out long lpFrequency);
-# endif
-
-        private long startTime, stopTime, freq;
-
-        public Timer()
-        {
-        }
-
-        public void Start() 
-        { 
-# if !LINUX
-			QueryPerformanceCounter(out startTime); 
-# endif
-        }
-
-        public double Stop()
-        {
-# if !LINUX
-			QueryPerformanceCounter(out stopTime);
-
-			if (QueryPerformanceFrequency(out freq) == false)
-			    return 0;
-# endif
-            return (double)(stopTime - startTime) / (double)freq;
-        }
-    }
-	
-
 	public class Utilities
 	{
         public delegate void UpdateStatusDelegate(int pValue, int pMax, string pInfoText);
@@ -52,30 +15,6 @@ namespace Chrismo.TagMotion
         public static void UpdateStatus(int pValue, int pMax, string pInfo)
         {
             StatusDelegate(pValue, pMax, pInfo);
-        }
-
-# if !LINUX
-        [DllImport("kernel32")]
-        private static extern long WritePrivateProfileString(string section, string key, string val, string filePath);
-
-        [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(string section, string key, string def, System.Text.StringBuilder retVal, int size, string filePath);
-# endif
-
-		public static string GetConfigParameter(string pFilePath, string pSection, string pParameter)
-		{
-			System.Text.StringBuilder tStringBuilder = new System.Text.StringBuilder(4096);
-# if !LINUX
-            int i = GetPrivateProfileString(pSection, pParameter, "", tStringBuilder, 4096, pFilePath);
-# endif
-			return tStringBuilder.ToString();
-		}
-
-		public static void SetConfigParameter(string pFilePath, string pSection, string pParameter, string pValue)
-		{
-# if !LINUX
-            WritePrivateProfileString(pSection, pParameter, pValue, pFilePath);
-# endif
         }
 
 
@@ -172,17 +111,21 @@ namespace Chrismo.TagMotion
 
 		public static string CleanFileString(string pStringToClean)
 		{
+            Console.WriteLine("StringToClean :: {0}", pStringToClean);
+
 			if (pStringToClean == null)
 				return "";
 
-			char[] tInvalidChars = new char[] { '"', '*', '|', '<', '>', '/', ':', '?' };
+            char[] tInvalidChars = new char[] { '"', '*', '|', '<', '>', ':', '?' };
 
             pStringToClean = pStringToClean.Replace("?", "¿");
             
             while (pStringToClean.IndexOfAny(tInvalidChars) != -1)
 				pStringToClean = pStringToClean.Remove(pStringToClean.IndexOfAny(tInvalidChars), 1);
 
-			return pStringToClean.Trim();
+            Console.WriteLine("CleanedString :: {0}", pStringToClean.Trim());
+            
+            return pStringToClean.Trim();
 		}
 	}
 }

@@ -90,18 +90,14 @@ namespace Chrismo.TagMotion.Forms
         }
 
         private void ReadSourceDirectory()
-        {
-			Timer tTimer = new Timer();
-
-			tTimer.Start();
-
+        {			
             _Collection = new Collection(Settings.SourceDir);
 
             try
             {
                 _Collection.ReadDirectory();
             }
-            catch (OutOfMemoryException ex)
+            catch (OutOfMemoryException)
             {
                 _Collection.StopReading = true;
             }
@@ -126,7 +122,6 @@ namespace Chrismo.TagMotion.Forms
 
             this.FillTreeview();
 
-			this.Statusbar.Text += String.Format(" ({0} sec)", tTimer.Stop().ToString("##0.000"));
             this.button_ReadSourceDirectory.BackgroundImage = global::Chrismo.TagMotion.Properties.Resources.media_playback_start;
 
             _ReadingSourceDirectory = false;
@@ -246,15 +241,13 @@ namespace Chrismo.TagMotion.Forms
         {
             try
             {
-#if !LINUX
                 object propertyGridView = typeof(PropertyGrid).InvokeMember("gridView",
                     BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance, null, propertyGrid, null);
 
                 propertyGridView.GetType().InvokeMember("MoveSplitterTo",
                     BindingFlags.InvokeMethod | BindingFlags.NonPublic | BindingFlags.Instance, null, propertyGridView, new object[] { x });
-# endif
             }
-            catch (TargetInvocationException)
+            catch (Exception)
             { }
         }
 
