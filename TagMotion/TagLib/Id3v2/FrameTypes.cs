@@ -71,17 +71,15 @@ namespace TagLib.Id3v2 {
 		public static readonly ReadOnlyByteVector TRCK = "TRCK";
 		public static readonly ReadOnlyByteVector TRDA = "TRDA";
 		public static readonly ReadOnlyByteVector TSIZ = "TSIZ";
-		public static readonly ReadOnlyByteVector TSOA = "TSOA";
-		public static readonly ReadOnlyByteVector TSO2 = "TSO2";
-		public static readonly ReadOnlyByteVector TSOC = "TSOC";
-		public static readonly ReadOnlyByteVector TSOP = "TSOP";
-		public static readonly ReadOnlyByteVector TSOT = "TSOT";
+		public static readonly ReadOnlyByteVector TSOA = "TSOA"; // Album Title Sort Frame
+		public static readonly ReadOnlyByteVector TSO2 = "TSO2"; // Album Artist Sort Frame
+		public static readonly ReadOnlyByteVector TSOC = "TSOC"; // Composer Sort Frame
+		public static readonly ReadOnlyByteVector TSOP = "TSOP"; // Performer Sort Frame
+		public static readonly ReadOnlyByteVector TSOT = "TSOT"; // Track Title Sort Frame
 		public static readonly ReadOnlyByteVector TXXX = "TXXX";
 		public static readonly ReadOnlyByteVector TYER = "TYER";
 		public static readonly ReadOnlyByteVector UFID = "UFID";
 		public static readonly ReadOnlyByteVector USER = "USER";
 		public static readonly ReadOnlyByteVector USLT = "USLT";
-
-        public static readonly ReadOnlyByteVector TPUB = "TPUB";
 	}
 }

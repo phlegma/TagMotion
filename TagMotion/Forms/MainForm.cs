@@ -53,9 +53,15 @@ namespace Chrismo.TagMotion.Forms
             foreach (string tFileStructure in Settings.FileStructures)
                 _SettingsDialog.ComboBox_FileStructure.Items.Add(tFileStructure);
 
-            _SettingsDialog.ComboBox_SourceDir.Text = Settings.SourceDirs[Settings.SelectedSourceDir];
-            _SettingsDialog.ComboBox_DestinationDir.Text = Settings.DestinationDirs[Settings.SelectedDestinationDir];
-            _SettingsDialog.ComboBox_FileStructure.Text = Settings.FileStructures[Settings.SelectedFileStructure];
+            if (Settings.SourceDirs.Count > 0)
+                _SettingsDialog.ComboBox_SourceDir.Text = Settings.SourceDirs[Settings.SelectedSourceDir];
+
+            if (Settings.DestinationDirs.Count > 0)
+                _SettingsDialog.ComboBox_DestinationDir.Text = Settings.DestinationDirs[Settings.SelectedDestinationDir];
+
+            if (Settings.FileStructures.Count > 0)
+                _SettingsDialog.ComboBox_FileStructure.Text = Settings.FileStructures[Settings.SelectedFileStructure];
+            
             _SettingsDialog.TextBox_InfoFileTypes.Text = Settings.InfoTypes;
             _SettingsDialog.comboBox_SortType.Text = Settings.SortType;
             _SettingsDialog.checkBox_DummyCreation.Checked = Settings.CreateDummyFile;
@@ -90,7 +96,25 @@ namespace Chrismo.TagMotion.Forms
         }
 
         private void ReadSourceDirectory()
-        {			
+        {
+            try
+            {
+                if (!Directory.Exists(Settings.SourceDir))
+                {
+                    MessageBox.Show("Source Directory does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.button_ReadSourceDirectory.BackgroundImage = global::Chrismo.TagMotion.Properties.Resources.media_playback_start;
+                    _ReadingSourceDirectory = !_ReadingSourceDirectory;
+                    return;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Source Directory does not exist!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                this.button_ReadSourceDirectory.BackgroundImage = global::Chrismo.TagMotion.Properties.Resources.media_playback_start;
+                _ReadingSourceDirectory = !_ReadingSourceDirectory;
+                return;
+            }
+
             _Collection = new Collection(Settings.SourceDir);
 
             try
@@ -241,6 +265,7 @@ namespace Chrismo.TagMotion.Forms
         {
             try
             {
+                // doesnt work in Mono (accessing private fields)
                 object propertyGridView = typeof(PropertyGrid).InvokeMember("gridView",
                     BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Instance, null, propertyGrid, null);
 

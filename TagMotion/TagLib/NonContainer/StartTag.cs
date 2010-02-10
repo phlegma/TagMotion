@@ -310,10 +310,8 @@ namespace TagLib.NonContainer {
 			file.Seek (position);
 			ByteVector data = file.ReadBlock (read_size);
 			
-			try 
-            {
-				if (data.StartsWith (TagLib.Ape.Footer.FileIdentifier)) 
-                {
+			try {
+				if (data.StartsWith (TagLib.Ape.Footer.FileIdentifier)) {
 					TagLib.Ape.Footer footer =
 						new TagLib.Ape.Footer (data);
 					
@@ -321,16 +319,14 @@ namespace TagLib.NonContainer {
 					return TagTypes.Ape;
 				}
 				
-				if (data.StartsWith (TagLib.Id3v2.Header.FileIdentifier)) 
-                {
-					TagLib.Id3v2.Header header = new TagLib.Id3v2.Header (data);
+				if (data.StartsWith (TagLib.Id3v2.Header.FileIdentifier)) {
+					TagLib.Id3v2.Header header =
+						new TagLib.Id3v2.Header (data);
 					
 					position += header.CompleteTagSize;
 					return TagTypes.Id3v2;
 				}
-			} 
-            catch (CorruptFileException) 
-            {
+			} catch (CorruptFileException) {
 			}
 			
 			return TagTypes.None;

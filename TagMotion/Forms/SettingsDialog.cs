@@ -61,9 +61,6 @@ namespace Chrismo.TagMotion.Forms
 
         private void Button_DeleteSourceDir_Click(object sender, EventArgs e)
         {
-            if (this.ComboBox_SourceDir.Items.Count == 1)
-                return;
-
             this.ComboBox_SourceDir.Items.Remove(this.ComboBox_SourceDir.SelectedItem);
 
             if (this.ComboBox_SourceDir.Items.Count > 0)
@@ -72,9 +69,6 @@ namespace Chrismo.TagMotion.Forms
 
         private void Button_DeleteDestinationDir_Click(object sender, EventArgs e)
         {
-            if (this.ComboBox_DestinationDir.Items.Count == 1)
-                return;
-
             this.ComboBox_DestinationDir.Items.Remove(this.ComboBox_DestinationDir.SelectedItem);
 
             if (this.ComboBox_DestinationDir.Items.Count > 0)

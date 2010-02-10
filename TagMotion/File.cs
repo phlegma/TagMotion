@@ -23,7 +23,7 @@ namespace Chrismo.TagMotion
             : base(pFilePath)
         {
             _Node.Tag = NodeType.Picture;
-
+                        
             Bitmap tImage = new Bitmap(pFilePath);
 
             _Width = tImage.Width;

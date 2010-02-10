@@ -21,9 +21,6 @@ namespace Chrismo.TagMotion
         public const string SONGTYPES = "*.mp3|*.ogg|*.flac|*.m4a|*.wma|*.aac|*.aiff";
         public const string PICTYPES = "*.jpg|*.jpeg|*.gif|*.png";
         
-		public static string ConfigPath = System.IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "TagMotion.config");
-        public const string ConfigSection = "AppSettings";
-        
         public static List<string> SourceDirs = new List<string>();
         public static List<string> DestinationDirs = new List<string>();
         public static List<string> FileStructures = new List<string>();
@@ -41,7 +38,7 @@ namespace Chrismo.TagMotion
         public static string SortType = "Path";
         public static bool FreeDBChecking = false;
 
-        public static string InfoTypes = "*.cue|*.nfo|*.txt";
+        public static string InfoTypes = "*.log|*.cue|*.nfo|*.txt";
 
 
 		public static void Save()
@@ -66,8 +63,13 @@ namespace Chrismo.TagMotion
             if (SourceDirs[0] == "")
             {
                 SourceDirs.Clear();
-				SourceDirs.Add(System.Windows.Forms.Application.StartupPath);
-				
+                SourceDirs.Add(System.Windows.Forms.Application.StartupPath);
+                SelectedSourceDir = 0;
+            }
+            else
+            {
+                try { SelectedSourceDir = Properties.Settings.Default.SelectedSourceDir; }
+                catch (Exception) { }
             }
 
             DestinationDirs.AddRange(Properties.Settings.Default.DestinationDirs.Split(new char[] { '?' }));
@@ -75,7 +77,13 @@ namespace Chrismo.TagMotion
             if (DestinationDirs[0] == "")
             {
                 DestinationDirs.Clear();
-				DestinationDirs.Add(System.Windows.Forms.Application.StartupPath);
+                DestinationDirs.Add(System.Windows.Forms.Application.StartupPath);
+                SelectedDestinationDir = 0;
+            }
+            else
+            {
+                try { SelectedDestinationDir = Properties.Settings.Default.SelectedDestinationDir; }
+                catch (Exception) { }
             }
 
             FileStructures.AddRange(Properties.Settings.Default.FileStructures.Split(new char[] { '?' }));
@@ -85,16 +93,12 @@ namespace Chrismo.TagMotion
                 FileStructures.Clear();
                 FileStructures.AddRange(new string[] { @"%RECORDARTIST\[%YEAR] %RECORDARTIST - %RECORDTITLE\%TRACK - %ARTIST - %TITLE", @"[%LABEL]\[%COMMENT] %RECORDARTIST - %RECORDTITLE (%BITRATE)\%TRACK - %ARTIST - %TITLE" });
             }
-
-            try { SelectedSourceDir = Properties.Settings.Default.SelectedSourceDir; }
-			catch (Exception) { }
-
-            try { SelectedDestinationDir = Properties.Settings.Default.SelectedDestinationDir; }
-			catch (Exception) { }
-
-            try { SelectedFileStructure = Properties.Settings.Default.SelectedFileStructure; }
-			catch (Exception) { }
-
+            else
+            {
+                try { SelectedFileStructure = Properties.Settings.Default.SelectedFileStructure; }
+                catch (Exception) { }
+            }
+            
             try { InfoTypes = Properties.Settings.Default.InfoTypes; }
 			catch (Exception) { }
 

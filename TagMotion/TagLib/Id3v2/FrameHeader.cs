@@ -1,12 +1,14 @@
 //
 // FrameHeader.cs:
 //
-// Author:
+// Authors:
 //   Brian Nickel (brian.nickel@gmail.com)
+//   Gabriel BUrt (gabriel.burt@gmail.com)
 //
 // Original Source:
 //   id3v2frame.cpp from TagLib
 //
+// Copyright (C) 2010 Novell, Inc.
 // Copyright (C) 2005-2007 Brian Nickel
 // Copyright (C) 2002,2003 Scott Wheeler (Original Implementation)
 //
@@ -90,6 +92,7 @@ namespace TagLib.Id3v2 {
 	/// </summary>
 	public struct FrameHeader
 	{
+		#region Private Fields
 		
 		/// <summary>
 		///    Contains frame's ID.
@@ -106,18 +109,11 @@ namespace TagLib.Id3v2 {
 		/// </summary>
 		private FrameFlags flags;
 		
+		#endregion
 		
-
-
-
-
-
-
-
-
-
-
-
+		
+		
+		#region Constructors
 		
 		/// <summary>
 		///    Constructs and initializes a new instance of <see
@@ -220,20 +216,11 @@ namespace TagLib.Id3v2 {
 			}
 		}
 		
+		#endregion
 		
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
+		
+		#region Public Properties
 		
 		/// <summary>
 		///    Gets and sets the identifier of the frame described by
@@ -298,19 +285,10 @@ namespace TagLib.Id3v2 {
 			}
 		}
 		
+		#endregion
 		
-
-
-
-
-
-
-
-
-
-
-
-
+		#region Public Methods
+		
 		/// <summary>
 		///    Renders the current instance, encoded in a specified
 		///    ID3v2 version.
@@ -380,21 +358,12 @@ namespace TagLib.Id3v2 {
 			return (uint) (version < 3 ? 6 : 10);
 		}
 		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		#endregion
+		
+		
+		
+		#region Private Methods
+		
 		private static ReadOnlyByteVector ConvertId (ByteVector id,
 		                                             byte version,
 		                                             bool toVersion)
@@ -466,7 +435,8 @@ namespace TagLib.Id3v2 {
 				{ "TCO", "TCON" },
 				{ "TCP", "TCMP" },
 				{ "TCR", "TCOP" },
-				{ "TDA", "TDRC" },
+				{ "TDA", "TDAT" },
+				{ "TIM", "TIME" },
 				{ "TDY", "TDLY" },
 				{ "TEN", "TENC" },
 				{ "TFT", "TFLT" },
@@ -486,7 +456,6 @@ namespace TagLib.Id3v2 {
 				{ "TPA", "TPOS" },
 				{ "TPB", "TPUB" },
 				{ "TRC", "TSRC" },
-				{ "TRD", "TDRC" },
 				{ "TRK", "TRCK" },
 				{ "TSS", "TSSE" },
 				{ "TT1", "TIT1" },
@@ -514,6 +483,7 @@ namespace TagLib.Id3v2 {
 				{ "XRVA", "RVA2" }
 
 			};
-
+		
+		#endregion
 	}
 }

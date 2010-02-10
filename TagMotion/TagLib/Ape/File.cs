@@ -43,20 +43,19 @@ namespace TagLib.Ape {
 	[SupportedMimeType("audio/ape")]
 	[SupportedMimeType("application/x-ape")]
 	public class File : TagLib.NonContainer.File
-	{		
+	{
+		#region Private Fields
+		
 		/// <summary>
 		///    Contains the block with the audio header.
 		/// </summary>
 		private ByteVector header_block = null;
 		
-
-
-
-
-
-
-
-
+		#endregion
+		
+		
+		
+		#region Constructors
 		
 		/// <summary>
 		///    Constructs and initializes a new instance of <see
@@ -139,18 +138,12 @@ namespace TagLib.Ape {
 		{
 		}
 		
+		#endregion
 		
-
-
-
-
-
-
-
-
-
-
-
+		
+		
+		#region Public Methods
+		
 		/// <summary>
 		///    Gets a tag of a specified type from the current instance,
 		///    optionally creating a new tag if possible.
@@ -200,16 +193,12 @@ namespace TagLib.Ape {
 			}
 		}
 		
-
-
-
-
-
-
-
-
-
-
+		#endregion
+		
+		
+		
+		#region Protected Methods
+		
 		/// <summary>
 		///    Reads format specific information at the start of the
 		///    file.
@@ -285,5 +274,7 @@ namespace TagLib.Ape {
 			
 			return new Properties(TimeSpan.Zero, header);
 		}
+		
+		#endregion
 	}
 }

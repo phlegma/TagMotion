@@ -1,12 +1,14 @@
 //
 // Tag.cs: Provide support for reading and writing ID3v2 tags.
 //
-// Author:
+// Authors:
 //   Brian Nickel (brian.nickel@gmail.com)
+//   Gabriel BUrt (gabriel.burt@gmail.com)
 //
 // Original Source:
 //   id3v2tag.cpp from TagLib
 //
+// Copyright (C) 2010 Novell, Inc.
 // Copyright (C) 2005-2007 Brian Nickel
 // Copyright (C) 2002,2003 Scott Wheeler (Original Implementation)
 //
@@ -39,7 +41,7 @@ namespace TagLib.Id3v2 {
 	/// </summary>
 	public class Tag : TagLib.Tag, IEnumerable<Frame>, ICloneable
 	{
-
+#region Private Static Fields
 		
 		/// <summary>
 		///    Contains the language to use for language specific
@@ -76,15 +78,11 @@ namespace TagLib.Id3v2 {
 		/// </summary>
 		private static bool use_numeric_genres = true;
 		
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Private Fields
 		
 		/// <summary>
 		///    Contains the tag's header.
@@ -101,18 +99,12 @@ namespace TagLib.Id3v2 {
 		/// </summary>
 		private List<Frame> frame_list = new List<Frame> ();
 		
-
-
-
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Constructors
+		
 		/// <summary>
 		///    Constructs and initializes a new instance of <see
 		///    cref="Tag" /> with no contents.
@@ -195,18 +187,11 @@ namespace TagLib.Id3v2 {
 				(int) header.TagSize));
 		}
 		
-
-
-
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Public Methods
 		
 		/// <summary>
 		///    Gets all frames contained in the current instance.
@@ -618,15 +603,11 @@ namespace TagLib.Id3v2 {
 			return tag_data;
 		}
 		
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Public Properties
 		
 		/// <summary>
 		///    Gets and sets the header flags applied to the current
@@ -666,13 +647,11 @@ namespace TagLib.Id3v2 {
 			}
 		}
 		
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Public Static Properties
 		
 		/// <summary>
 		///    Gets and sets the ISO-639-2 language code to use when
@@ -784,14 +763,11 @@ namespace TagLib.Id3v2 {
 			set {use_numeric_genres = value;}
 		}
 		
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Protected Methods
 		
 		/// <summary>
 		///    Populates the current instance be reading in a tag from
@@ -880,6 +856,7 @@ namespace TagLib.Id3v2 {
 			// for post-processing, so check for them as they are
 			// loaded.
 			TextInformationFrame tdrc = null;
+			TextInformationFrame tyer = null;
 			TextInformationFrame tdat = null;
 			TextInformationFrame time = null;
 			
@@ -905,7 +882,7 @@ namespace TagLib.Id3v2 {
 				
 				if(frame == null)
 					break;
-				
+
 				// Only add frames that contain data.
 				if (frame.Size == 0)
 					continue;
@@ -923,6 +900,9 @@ namespace TagLib.Id3v2 {
 				if (tdrc == null &&
 					frame.FrameId.Equals (FrameType.TDRC)) {
 					tdrc = frame as TextInformationFrame;
+				} else if (tyer == null &&
+					frame.FrameId.Equals (FrameType.TYER)) {
+					tyer = frame as TextInformationFrame;
 				} else if (tdat == null &&
 					frame.FrameId.Equals (FrameType.TDAT)) {
 					tdat = frame as TextInformationFrame;
@@ -931,63 +911,51 @@ namespace TagLib.Id3v2 {
 					time = frame as TextInformationFrame;
 				}
 			}
-			
-			// Post-processing: Combine the three frames into one
-			// TDRC frame.
-			if (tdrc == null || tdat == null) {
-				if (tdat != null)
-					RemoveFrames (FrameType.TDAT);
-				
-				if (time != null)
-					RemoveFrames (FrameType.TIME);
-				
+
+			// Try to fill out the date/time of the TDRC frame.  Can't do that if no TDRC
+			// frame exists, or if there is no TDAT frame, or if TDRC already has the date.
+			if (tdrc == null || tdat == null || tdrc.ToString ().Length > 4) {
 				return;
 			}
-			
-			StringBuilder tdrc_text = new StringBuilder (
-				tdrc.ToString ());
-			
-			string tdat_text = tdat.ToString ();
-			
-			if (tdrc_text.Length != 4 || tdat_text.Length != 4) {
+
+			string year = tdrc.ToString ();
+			if (year.Length != 4)
+				return;
+
+			// Start with the year already in TDRC, then add the TDAT and TIME if available
+			StringBuilder tdrc_text = new StringBuilder ();
+			tdrc_text.Append (year);
+
+			// Add the date
+			if (tdat != null) {
+				string tdat_text = tdat.ToString ();
+				if (tdat_text.Length == 4) {
+					tdrc_text.Append ("-").Append (tdat_text, 0, 2)
+						.Append ("-").Append (tdat_text, 2, 2);
+
+					// Add the time
+					if (time != null) {
+						string time_text = time.ToString ();
+							
+						if (time_text.Length == 4)
+							tdrc_text.Append ("T").Append (time_text, 0, 2)
+								.Append (":").Append (time_text, 2, 2);
+
+						RemoveFrames (FrameType.TIME);
+					}
+				}
+
 				RemoveFrames (FrameType.TDAT);
-				
-				if (time != null)
-					RemoveFrames (FrameType.TIME);
-				
-				return;
 			}
-			
-			tdrc_text.Append ("-").Append (tdat_text, 0, 2)
-				.Append ("-").Append (tdat_text, 2, 2);
-			
-			RemoveFrames (FrameType.TDAT);
-			
-			if (time == null) {
-				tdrc.Text = new string [] {tdrc_text.ToString ()};
-				return;
-			}
-			
-			string time_text = time.ToString ();
-				
-			if (time_text.Length == 4)
-				tdrc_text.Append ("T").Append (time_text, 0, 2)
-					.Append (":").Append (time_text, 2, 2);
-					
-			tdrc.Text = new string [] {tdrc_text.ToString ()};
-			
-			RemoveFrames (FrameType.TIME);
+
+			tdrc.Text = new string [] { tdrc_text.ToString () };
 		}
 		
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Private Methods
 		
 		// TODO: These should become public some day.
 		
@@ -1070,7 +1038,86 @@ namespace TagLib.Id3v2 {
 			
 			return 0;
 		}
-		
+
+		/// <summary>
+		/// Gets a TXXX frame via reference of the description field
+		/// </summary>
+		/// <param name="description">String containing the description field</param>
+		/// <returns>UserTextInformationFrame (TXXX) that corresponds to the description</returns>
+		private string GetUserTextAsString (string description){
+
+			//Gets the TXXX frame, frame will be null if nonexistant
+			UserTextInformationFrame frame = UserTextInformationFrame.Get (
+				this, description, false);
+
+			//TXXX frames support multivalue strings, join them up and return
+			//only the text from the frame.
+			string result = frame == null ? null : string.Join (";",frame.Text);
+			return string.IsNullOrEmpty (result) ? null : result;
+
+		}
+
+		/// <summary>
+		/// Creates and/or sets a UserTextInformationFrame (TXXX)  with the given
+		/// description and text.
+		/// </summary>
+		/// <param name="description">String containing the Description field for the
+		/// TXXX frame</param>
+		/// <param name="text">String containing the Text field for the TXXX frame</param>
+		private void SetUserTextAsString(string description, string text) {
+
+			//Get the TXXX frame, create a new one if needed
+			UserTextInformationFrame frame = UserTextInformationFrame.Get(
+				this, description, true);
+
+			if (!string.IsNullOrEmpty(text)) {
+				frame.Text = text.Split(';');
+			}
+			else {
+			//Text string is null or empty, delete the frame, prevent empties
+				RemoveFrame(frame);
+			}
+
+		}
+
+		/// <summary>
+		/// Gets the text from a particular UFID frame, referenced by the owner field
+		/// </summary>
+		/// <param name="owner">String containing the "Owner" data</param>
+		/// <returns>String containing the text from the UFID frame, or null</returns>
+		private string GetUfidText(string owner) {
+
+			//Get the UFID frame, frame will be null if nonexistant
+			UniqueFileIdentifierFrame frame = UniqueFileIdentifierFrame.Get(
+				this, owner, false);
+			
+			//If the frame existed: frame.Identifier is a bytevector, get a string
+			string result = frame == null ? null : frame.Identifier.ToString();
+			return string.IsNullOrEmpty (result) ? null : result;
+		}
+
+		/// <summary>
+		/// Creates and/or sets the text for a UFID frame, referenced by owner
+		/// </summary>
+		/// <param name="owner">String containing the Owner field</param>
+		/// <param name="text">String containing the text to set for the frame</param>
+		private void SetUfidText(string owner, string text) {
+
+			//Get a UFID frame, create if necessary
+			UniqueFileIdentifierFrame frame = UniqueFileIdentifierFrame.Get(
+				this, owner, true);
+
+			//If we have a real string, convert to ByteVector and apply to frame
+			if (!string.IsNullOrEmpty(text)) {
+				ByteVector identifier = ByteVector.FromString(text, StringType.UTF8);
+				frame.Identifier = identifier;
+			}
+			else {
+				//String was null or empty, remove the frame to prevent empties
+				RemoveFrame(frame);
+			}
+		}
+
 		/// <summary>
 		///    Moves a specified frame so it is the first of its type in
 		///    the tag.
@@ -1103,14 +1150,11 @@ namespace TagLib.Id3v2 {
 				frame_list.Add (swapping);
 		}
 		
-
-
-
-
-
-
-
-
+		#endregion
+		
+		
+		
+#region IEnumerable
 		
 		/// <summary>
 		///    Gets an enumerator for enumerating through the frames.
@@ -1129,16 +1173,11 @@ namespace TagLib.Id3v2 {
 			return frame_list.GetEnumerator ();
 		}
 		
-
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region TagLib.Tag
 		
 		/// <summary>
 		///    Gets the tag types contained in the current instance.
@@ -1281,7 +1320,7 @@ namespace TagLib.Id3v2 {
 			get {return GetTextAsArray (FrameType.TCOM);}
 			set {SetTextFrame (FrameType.TCOM, value);}
 		}
-
+		
 		/// <summary>
 		///    Gets and sets the sort names of the composers of the
 		///    media represented by the current instance.
@@ -1318,30 +1357,7 @@ namespace TagLib.Id3v2 {
 			get {return GetTextAsString (FrameType.TALB);}
 			set {SetTextFrame (FrameType.TALB, value);}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-        public override string Publisher
-        {
-            get { return GetTextAsString(FrameType.TPUB); }
-            set { SetTextFrame(FrameType.TPUB, value); }
-        }
-
-
-
-
-
-
-
+		
 		/// <summary>
 		///    Gets and sets the sort names of the Album title of the
 		///    media represented by the current instance.
@@ -1701,6 +1717,176 @@ namespace TagLib.Id3v2 {
 			get {return GetTextAsString (FrameType.TCOP);}
 			set {SetTextFrame (FrameType.TCOP, value);}
 		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz ArtistID
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    ArtistID for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Artist Id" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzArtistId {
+			get {return GetUserTextAsString ("MusicBrainz Artist Id");}
+			set {SetUserTextAsString ("MusicBrainz Artist Id",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz ReleaseID
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    ReleaseID for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Album Id" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzReleaseId {
+			get {return GetUserTextAsString ("MusicBrainz Album Id");}
+			set {SetUserTextAsString ("MusicBrainz Album Id",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz ReleaseArtistID
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    ReleaseArtistID for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Album Artist Id" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzReleaseArtistId {
+			get {return GetUserTextAsString ("MusicBrainz Album Artist Id");}
+			set {SetUserTextAsString ("MusicBrainz Album Artist Id",value);}
+		}
+		
+		/// <summary>
+		///    Gets and sets the MusicBrainz TrackID
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    TrackID for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "UFID:http://musicbrainz.org" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzTrackId {
+		    get { return GetUfidText ("http://musicbrainz.org");}
+		    set {SetUfidText ("http://musicbrainz.org", value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz DiscID
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    DiscID for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Disc Id" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzDiscId {
+			get {return GetUserTextAsString ("MusicBrainz Disc Id");}
+			set {SetUserTextAsString ("MusicBrainz Disc Id",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicIP PUID
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicIP PUID
+		///    for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicIP PUID" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicIpId {
+			get {return GetUserTextAsString ("MusicIP PUID");}
+			set {SetUserTextAsString ("MusicIP PUID",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the Amazon ID (ASIN)
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the Amazon Id
+		///    for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:ASIN" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string AmazonId {
+			get {return GetUserTextAsString ("ASIN");}
+			set {SetUserTextAsString ("ASIN",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz ReleaseStatus
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    ReleaseStatus for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Album Status" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzReleaseStatus {
+			get {return GetUserTextAsString ("MusicBrainz Album Status");}
+			set {SetUserTextAsString ("MusicBrainz Album Status",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz ReleaseType
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    ReleaseType for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Album Type" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzReleaseType {
+			get {return GetUserTextAsString ("MusicBrainz Album Type");}
+			set {SetUserTextAsString ("MusicBrainz Album Type",value);}
+		}
+
+		/// <summary>
+		///    Gets and sets the MusicBrainz ReleaseCountry
+		/// </summary>
+		/// <value>
+		///    A <see cref="string" /> containing the MusicBrainz
+		///    ReleaseCountry for the media described by the current 
+		///    instance, or null if no value is present. 
+		/// </value>
+		/// <remarks>
+		///    This property is implemented using the "TXXX:MusicBrainz Album Release Country" frame.
+		///    http://musicbrainz.org/doc/PicardTagMapping
+		/// </remarks>
+		public override string MusicBrainzReleaseCountry {
+			get {return GetUserTextAsString ("MusicBrainz Album Release Country");}
+			set {SetUserTextAsString ("MusicBrainz Album Release Country",value);}
+		}
 		
 		/// <summary>
 		///    Gets and sets a collection of pictures associated with
@@ -1842,12 +2028,11 @@ namespace TagLib.Id3v2 {
 			}
 		}
 		
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region ICloneable
 		
 		/// <summary>
 		///    Creates a deep copy of the current instance.
@@ -1873,5 +2058,7 @@ namespace TagLib.Id3v2 {
 		{
 			return Clone ();
 		}
+		
+#endregion
 	}
 }

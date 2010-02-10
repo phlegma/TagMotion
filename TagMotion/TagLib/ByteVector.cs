@@ -1256,7 +1256,7 @@ namespace TagLib {
 				throw new ArgumentOutOfRangeException ("count");
 			
 			ByteVector bom = type == StringType.UTF16 &&
-				this.data.Count > 1 ? Mid (offset, 2) : null;
+				this.data.Count - offset > 1 ? Mid (offset, 2) : null;
 			
 			string s = StringTypeToEncoding (type, bom)
 				.GetString (Data, offset, count);
@@ -2005,9 +2005,9 @@ namespace TagLib {
 		{
 			if (abstraction == null)
 				throw new ArgumentNullException ("abstraction");
-
-            System.IO.Stream stream = abstraction.ReadStream;
-            ByteVector output = FromStream(stream, out firstChunk,
+			
+			System.IO.Stream stream = abstraction.ReadStream;
+			ByteVector output = FromStream (stream, out firstChunk,
 				copyFirstChunk);
 			abstraction.CloseStream (stream);
 			return output;

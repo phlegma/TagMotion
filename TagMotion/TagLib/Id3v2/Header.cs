@@ -60,22 +60,14 @@ namespace TagLib.Id3v2 {
 		FooterPresent = 0x10
 	}
 	
-
-
-
-
-
-
-
-
-
 	/// <summary>
 	///    This structure provides a representation of an ID3v2 tag header
 	///    which can be read from and written to disk.
 	/// </summary>
 	public struct Header
 	{
-
+#region Private Fields
+		
 		/// <summary>
 		///    Contains the tag's major version.
 		/// </summary>
@@ -96,18 +88,11 @@ namespace TagLib.Id3v2 {
 		/// </summary>
 		private uint tag_size;
 		
-
-
-
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Public Fields
 		
 		/// <summary>
 		///    The size of a ID3v2 header.
@@ -122,19 +107,11 @@ namespace TagLib.Id3v2 {
 		/// </value>
 		public static readonly ReadOnlyByteVector FileIdentifier = "ID3";
 		
-
-
-
-
-
-
-
-
-
-
-
-
-
+#endregion
+		
+		
+		
+#region Constructors
 		
 		/// <summary>
 		///    Constructs and initializes a new instance of <see
@@ -189,24 +166,12 @@ namespace TagLib.Id3v2 {
 			
 			tag_size = SynchData.ToUInt (data.Mid (6, 4));
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		
+#endregion
+		
+		
+		
+#region Public Properties
 		
 		/// <summary>
 		///    Gets and sets the major version of the tag described by
@@ -276,19 +241,21 @@ namespace TagLib.Id3v2 {
 		///    <paramref name="value" /> contains a flag not supported
 		///    by the the ID3v2 version of the current instance.
 		/// </exception>
-		public HeaderFlags Flags 
-        {
-			get 
-            {
-                return flags;
-            }
-			set 
-            {
-				if (0 != (value & (HeaderFlags.ExtendedHeader |	HeaderFlags.ExperimentalIndicator)) && MajorVersion < 3)
-					throw new ArgumentException ("Feature only supported in version 2.3+", "value");
+		public HeaderFlags Flags {
+			get {return flags;}
+			set {
+				if (0 != (value & (HeaderFlags.ExtendedHeader |
+					HeaderFlags.ExperimentalIndicator)) &&
+					MajorVersion < 3)
+					throw new ArgumentException (
+						"Feature only supported in version 2.3+",
+						"value");
 				
-				if (0 != (value & HeaderFlags.FooterPresent) &&	MajorVersion < 3)
-					throw new ArgumentException ("Feature only supported in version 2.4+", "value");
+				if (0 != (value & HeaderFlags.FooterPresent) &&
+					MajorVersion < 3)
+					throw new ArgumentException (
+						"Feature only supported in version 2.4+",
+						"value");
 				
 				flags = value;
 			}
@@ -302,8 +269,7 @@ namespace TagLib.Id3v2 {
 		///    A <see cref="uint" /> value containing the size of the
 		///    tag described by the current instance.
 		/// </value>
-		public uint TagSize 
-        {
+		public uint TagSize {
 			get {return tag_size;}
 			set {tag_size = value;}
 		}
@@ -316,20 +282,20 @@ namespace TagLib.Id3v2 {
 		///    A <see cref="uint" /> value containing the complete size
 		///    of the tag described by the current instance.
 		/// </value>
-		public uint CompleteTagSize 
-        {
-			get 
-            {
+		public uint CompleteTagSize {
+			get {
 				if ((flags & HeaderFlags.FooterPresent) != 0)
 					return TagSize + Size + Footer.Size;
 				else
 					return TagSize + Size;
 			}
 		}
-
-
-
-
+		
+#endregion
+		
+		
+		
+#region Public Methods
 		
 		/// <summary>
 		///    Renders the current instance as a raw ID3v2 header.
@@ -348,5 +314,7 @@ namespace TagLib.Id3v2 {
 			v.Add (SynchData.FromUInt (TagSize));
 			return v;
 		}
+		
+#endregion
 	}
 }
