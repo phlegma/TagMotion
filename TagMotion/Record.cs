@@ -613,6 +613,8 @@ namespace Chrismo.TagMotion
         {
             _DiscID = this.GetDiscID();
 
+            
+
             FreedbHelper _FreeDB = new FreedbHelper(); ;
 
             _FreeDB.UserName = "User";

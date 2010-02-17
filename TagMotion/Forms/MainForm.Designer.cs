@@ -137,7 +137,7 @@
             this.extractImageToFileToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.contextMenu.Name = "contextMenuStrip1";
-            this.contextMenu.Size = new System.Drawing.Size(188, 158);
+            this.contextMenu.Size = new System.Drawing.Size(188, 136);
             this.contextMenu.Text = "Context Menu";
             // 
             // copyToolStripMenuItem1
