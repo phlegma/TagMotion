@@ -44,6 +44,7 @@
             this.freeDBQueryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.storeIinTagsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractImageToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.AddPicture = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_Top = new System.Windows.Forms.Panel();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
@@ -119,11 +120,11 @@
             this.TreeView.Name = "TreeView";
             this.TreeView.Size = new System.Drawing.Size(792, 433);
             this.TreeView.TabIndex = 1;
-            this.TreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.OnDragDrop);
             this.TreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeView_AfterSelect);
+            this.TreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeViewNode_MouseClick);
+            this.TreeView.DragDrop += new System.Windows.Forms.DragEventHandler(this.OnDragDrop);
             this.TreeView.DragEnter += new System.Windows.Forms.DragEventHandler(this.OnDragEnter);
             this.TreeView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.OnKeyPress);
-            this.TreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.TreeViewNode_MouseClick);
             // 
             // contextMenu
             // 
@@ -135,52 +136,60 @@
             this.freeDBQueryToolStripMenuItem,
             this.storeIinTagsToolStripMenuItem,
             this.extractImageToFileToolStripMenuItem,
+            this.AddPicture,
             this.deleteToolStripMenuItem});
             this.contextMenu.Name = "contextMenuStrip1";
-            this.contextMenu.Size = new System.Drawing.Size(188, 136);
+            this.contextMenu.Size = new System.Drawing.Size(206, 158);
             this.contextMenu.Text = "Context Menu";
             // 
             // copyToolStripMenuItem1
             // 
             this.copyToolStripMenuItem1.Image = global::Chrismo.TagMotion.Properties.Resources.edit_copy;
             this.copyToolStripMenuItem1.Name = "copyToolStripMenuItem1";
-            this.copyToolStripMenuItem1.Size = new System.Drawing.Size(187, 22);
+            this.copyToolStripMenuItem1.Size = new System.Drawing.Size(205, 22);
             this.copyToolStripMenuItem1.Text = "Copy";
             this.copyToolStripMenuItem1.Click += new System.EventHandler(this.Copy_Click);
             // 
             // AutoTagToolStripMenuItem
             // 
             this.AutoTagToolStripMenuItem.Name = "AutoTagToolStripMenuItem";
-            this.AutoTagToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.AutoTagToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.AutoTagToolStripMenuItem.Text = "AutoTag";
             this.AutoTagToolStripMenuItem.Click += new System.EventHandler(this.AutoTag_Click);
             // 
             // freeDBQueryToolStripMenuItem
             // 
             this.freeDBQueryToolStripMenuItem.Name = "freeDBQueryToolStripMenuItem";
-            this.freeDBQueryToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.freeDBQueryToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.freeDBQueryToolStripMenuItem.Text = "FreeDB Query";
             this.freeDBQueryToolStripMenuItem.Click += new System.EventHandler(this.FreeDBQuery_Click);
             // 
             // storeIinTagsToolStripMenuItem
             // 
             this.storeIinTagsToolStripMenuItem.Name = "storeIinTagsToolStripMenuItem";
-            this.storeIinTagsToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.storeIinTagsToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.storeIinTagsToolStripMenuItem.Text = "Store Image In Tags";
             this.storeIinTagsToolStripMenuItem.Click += new System.EventHandler(this.StoreImage_Click);
             // 
             // extractImageToFileToolStripMenuItem
             // 
             this.extractImageToFileToolStripMenuItem.Name = "extractImageToFileToolStripMenuItem";
-            this.extractImageToFileToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.extractImageToFileToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.extractImageToFileToolStripMenuItem.Text = "Extract Image To File";
             this.extractImageToFileToolStripMenuItem.Click += new System.EventHandler(this.ExtractImage_Click);
+            // 
+            // AddPicture
+            // 
+            this.AddPicture.Name = "AddPicture";
+            this.AddPicture.Size = new System.Drawing.Size(205, 22);
+            this.AddPicture.Text = "Add Picture";
+            this.AddPicture.Click += new System.EventHandler(this.AddPicture_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Image = global::Chrismo.TagMotion.Properties.Resources.process_stop1;
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.Delete_Click);
             // 
@@ -217,6 +226,7 @@
             this.PropertyGrid.ToolbarVisible = false;
             this.PropertyGrid.ViewBackColor = System.Drawing.Color.Ivory;
             this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_ValueChanged);
+            this.PropertyGrid.Click += new System.EventHandler(this.PropertyGrid_Click);
             // 
             // panel_Icons
             // 
@@ -346,6 +356,7 @@
             this.PictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.PictureBox.TabIndex = 81;
             this.PictureBox.TabStop = false;
+            this.PictureBox.Click += new System.EventHandler(this.PictureBox_Click);
             // 
             // panel2
             // 
@@ -382,7 +393,7 @@
             // Statusbar
             // 
             this.Statusbar.Name = "Statusbar";
-            this.Statusbar.Size = new System.Drawing.Size(56, 17);
+            this.Statusbar.Size = new System.Drawing.Size(73, 17);
             this.Statusbar.Text = "TagMotion";
             // 
             // closeToolStripMenuItem
@@ -397,7 +408,7 @@
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(792, 768);
@@ -451,5 +462,6 @@
         private System.Windows.Forms.ToolStripMenuItem storeIinTagsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractImageToFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem freeDBQueryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem AddPicture;
 	}
 }

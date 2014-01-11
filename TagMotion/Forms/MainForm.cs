@@ -373,6 +373,7 @@ namespace Chrismo.TagMotion.Forms
             this.contextMenu.Items[3].Visible = false;
             this.contextMenu.Items[4].Visible = false;
             this.contextMenu.Items[5].Visible = false;
+            this.contextMenu.Items[6].Visible = false;
 
             if (e.Button != MouseButtons.Right || e.Node.Tag == null)
                 return;
@@ -384,16 +385,17 @@ namespace Chrismo.TagMotion.Forms
                 // 2 == FreeDB Query
                 // 3 == Store Image In Tags
                 // 4 == Extract Image To File
-                // 5 == Delete
+                // 5 == AddPicture
+                // 6 == Delete
 
                 case NodeType.Collection:
-
                     this.contextMenu.Items[0].Visible = true;
                     this.contextMenu.Items[1].Visible = false;
                     this.contextMenu.Items[2].Visible = false;
                     this.contextMenu.Items[3].Visible = true;
                     this.contextMenu.Items[4].Visible = true;
                     this.contextMenu.Items[5].Visible = false;
+                    this.contextMenu.Items[6].Visible = false;
                     break;
 
                 case NodeType.Record:
@@ -404,6 +406,7 @@ namespace Chrismo.TagMotion.Forms
                     this.contextMenu.Items[3].Visible = false;
                     this.contextMenu.Items[4].Visible = false;
                     this.contextMenu.Items[5].Visible = true;
+                    this.contextMenu.Items[6].Visible = true;
                     break;
 
                 case NodeType.Song:
@@ -413,7 +416,8 @@ namespace Chrismo.TagMotion.Forms
                     this.contextMenu.Items[2].Visible = false;
                     this.contextMenu.Items[3].Visible = false;
                     this.contextMenu.Items[4].Visible = true;
-                    this.contextMenu.Items[5].Visible = true;
+                    this.contextMenu.Items[5].Visible = false;
+                    this.contextMenu.Items[6].Visible = true;
                     break;
 
                 case NodeType.Picture:
@@ -424,6 +428,7 @@ namespace Chrismo.TagMotion.Forms
                     this.contextMenu.Items[3].Visible = true;
                     this.contextMenu.Items[4].Visible = false;
                     this.contextMenu.Items[5].Visible = true;
+                    this.contextMenu.Items[6].Visible = true;
                     break;
 
                 case NodeType.Info:
@@ -433,7 +438,8 @@ namespace Chrismo.TagMotion.Forms
                     this.contextMenu.Items[2].Visible = false;
                     this.contextMenu.Items[3].Visible = false;
                     this.contextMenu.Items[4].Visible = false;
-                    this.contextMenu.Items[5].Visible = true;
+                    this.contextMenu.Items[5].Visible = false;
+                    this.contextMenu.Items[6].Visible = true;
                     break;
             }
 
@@ -699,6 +705,11 @@ namespace Chrismo.TagMotion.Forms
             this.FillTreeview();
 
             this.EnableButtons();
+        }
+
+        private void AddPicture_Click(object sender, EventArgs e)
+        {
+            AddPictureOpenFileDialog();
         }
 
         private void ExtractImage_Click(object sender, EventArgs e)
@@ -998,6 +1009,117 @@ namespace Chrismo.TagMotion.Forms
                 "Year:\t\t" + Filter.Year.Min + " - " + Filter.Year.Max + Environment.NewLine +
                 "Duration:\t" + Filter.Duration.Min + " - " + Filter.Duration.Max + Environment.NewLine +
                 "Artist:\t" + Filter.Artist + Environment.NewLine + "Label:\t" + Filter.Label);
+        }
+
+        private void PictureBox_Click(object sender, EventArgs e)
+        {
+            //AddPictureOpenFileDialog();
+        }
+
+        private void PropertyGrid_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+
+        private void AddPictureOpenFileDialog()
+        {
+            Record SelectedRecord = _Collection.GetRecord(_SelectedNode.Text);
+            string TargetPath = SelectedRecord.Path;
+            OpenFileDialog OpenFileDialog = new OpenFileDialog();
+            //odlgTextFile.ShowDialog();
+            
+            StreamReader ts = null;
+            try
+            {
+                OpenFileDialog.CheckFileExists = true;
+
+                // Check to ensure that the selected
+                // path exists.  Dialog box displays 
+                // a warning otherwise.
+
+                OpenFileDialog.CheckPathExists = true;
+
+                OpenFileDialog.DefaultExt = "txt";
+
+                // return the file referenced by a link? if 
+                // false, simply returns the selected link
+                // file. if true, returns the file linked to 
+                // the LNK file.
+
+                OpenFileDialog.DereferenceLinks = true;
+
+                // Just in VB6, use a set of pairs
+                // of filters, separated with "|". Each 
+                // pair consists of a description|file spec.
+                // Use a "|" between pairs. No need to put a
+                // trailing "|". You can set the FilterIndex
+                // property well, to select the default
+                // filter. Amazingly, the first filter is 
+                // numbered 1 (! 0). The default is 1. 
+
+                OpenFileDialog.Filter = "Image Files (*.bmp, *.jpg, *.jpeg, *.png)|*.bmp;*.jpg; *.jpeg; *.png|" + "All files|*.*";
+
+                OpenFileDialog.Multiselect = true;
+
+                // Restore the original directory when done selecting
+                // a file? if false, the current directory changes
+                // to the directory in which you selected the file.
+                // Set this to true to put the current folder back
+                // where it was when you started.
+                // The default is false.
+
+                OpenFileDialog.RestoreDirectory = true;
+
+                // Show the Help button and Read-Only checkbox?
+
+                OpenFileDialog.ShowHelp = true;
+
+                OpenFileDialog.ShowReadOnly = false;
+
+                // Start out with the read-only check box checked?
+                // This only make sense if ShowReadOnly is true.
+                // .ReadOnlyChecked = false
+
+                OpenFileDialog.Title = "Select the files to copie";
+
+                // Only accept valid Win32 file names?
+
+                OpenFileDialog.ValidateNames = true;
+
+                if (OpenFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string[] FileNames = OpenFileDialog.FileNames;
+                    foreach (string File in FileNames)
+                    {
+                        CopyFile(File, Path.Combine(TargetPath,Path.GetFileName(File)));
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                MessageBox.Show(exp.Message, this.Text);
+            }
+            finally
+            {
+                if (ts != null)
+                {
+                    ts.Close();
+                }
+                SelectedRecord.ReadDirectory();
+            }
+        }
+
+        private void CopyFile(string SourcePath,string TargetPath)
+        {
+            try
+            {
+                System.IO.File.Copy(SourcePath, TargetPath, false);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, this.Text);
+            }
         }
     }
 }
